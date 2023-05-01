@@ -16,6 +16,9 @@ from PIL import Image
 import math
 from common import *
 import pickle
+# import codecs
+
+
 
 def sample_weighted(p_dict):
     ps = list(p_dict.keys())
@@ -95,8 +98,8 @@ class RenderFont(object):
         self.min_nchar = 2
         self.min_font_h = 16 #px : 0.6*12 ~ 7px <= actual minimum height
         self.max_font_h = 120 #px
-        self.p_flat = 0.10
-        # self.p_flat = 0
+        # self.p_flat = 0.10
+        self.p_flat = 0
 
         # curved baseline:
         # self.p_curved = 1
@@ -105,7 +108,7 @@ class RenderFont(object):
 
         # text-source : gets english text:
         self.text_source = TextSource(min_nchar=self.min_nchar,
-                                      fn=osp.join(data_dir,'newsgroup/newsgroup.txt'))
+                                      fn=osp.join(data_dir,'newsgroup/chinese_target.txt'))
 
         # get font-state object:
         self.font_state = FontState(data_dir)
@@ -121,10 +124,11 @@ class RenderFont(object):
 
         returns the updated surface, words and the character bounding boxes.
         """
-        # get the number of lines
+        # HORIZONTAL
         # lines = text.split('\n')
-        print(text)
-        lines = [c for c in text]
+        
+        # VERTICAL
+        lines = [c.strip() for c in text]
         lengths = [len(l) for l in lines]
 
         # font parameters:
@@ -226,7 +230,7 @@ class RenderFont(object):
                 last_rect = rect
 
             ch_idx.append(i)
-            ch = word_text[i]
+            ch = word_text[i].strip()
 
             newrect = font.get_rect(ch)
             newrect.y = last_rect.y
@@ -375,13 +379,14 @@ class RenderFont(object):
             assert nline >= 1 and nchar >= self.min_nchar
 
             # sample text:
-            # text_type = sample_weighted(self.p_text)
-            # text = self.text_source.sample(nline,nchar,text_type)
-            text_arr = random.sample('ABCDEFGHIJKLMNOPQRSTUVWXYZ',2) 
-            text = ''.join(text_arr) + 'U' 
-            text2 = random.sample('0123456789',2) 
-            text2 = ''.join(text2)
-            text = text + text2
+            text_type = sample_weighted(self.p_text)
+            text = self.text_source.sample(nline,nchar,text_type)
+            # text_arr = random.sample('ABCDEFGHIJKLMNOPQRSTUVWXYZ',2) 
+            # text = ''.join(text_arr) + 'U' 
+            # text2 = random.sample('0123456789',2) 
+            # text2 = ''.join(text2)
+            # text = text + text2
+            # text = '国捷电脑'
             print(text)
 
 
@@ -440,23 +445,23 @@ class FontState(object):
 
         # get character-frequencies in the English language:
         with open(char_freq_path,'rb') as f:
-            #self.char_freq = cp.load(f)
-            u = pickle._Unpickler(f)
-            u.encoding = 'latin1'
-            p = u.load()
-            self.char_freq = p
+            self.char_freq = cp.load(f, encoding='latin1')
+            # u = pickle._Unpickler(f)
+            # u.encoding = 'latin1'
+            # p = u.load()
+            # self.char_freq = p
 
         # get the model to convert from pixel to font pt size:
         with open(font_model_path,'rb') as f:
-            #self.font_model = cp.load(f)
-            u = pickle._Unpickler(f)
-            u.encoding = 'latin1'
-            p = u.load()
-            self.font_model = p
+            self.font_model = pickle.load(f, encoding='latin1')
+            # u = pickle._Unpickler(f)
+            # u.encoding = 'latin1'
+            # p = u.load()
+            # self.font_model = p
             
         # get the names of fonts to use:
         self.FONT_LIST = osp.join(data_dir, 'fonts/fontlist.txt')
-        self.fonts = [os.path.join(data_dir,'fonts',f.strip()) for f in open(self.FONT_LIST)]
+        self.fonts = [os.path.join(data_dir,'fonts',f.strip()) for f in open(self.FONT_LIST, encoding='utf-8-sig')]
 
 
     def get_aspect_ratio(self, font, size=None):
@@ -487,7 +492,7 @@ class FontState(object):
     def get_font_size(self, font, font_size_px):
         """
         Returns the font-size which corresponds to FONT_SIZE_PX pixels font height.
-        """
+        """      
         m = self.font_model[font.name]
         return m[0]*font_size_px + m[1] #linear model
 
@@ -543,7 +548,7 @@ class TextSource(object):
                       'LINE':self.sample_line,
                       'PARA':self.sample_para}
 
-        with open(fn,'r') as f:
+        with open(fn,'r', encoding='utf8') as f:
             self.txt = [l.strip() for l in f.readlines()]
 
         # distribution over line/words for LINE/PARA:

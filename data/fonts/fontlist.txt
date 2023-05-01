@@ -1,3 +1,7 @@
-ubuntu/Ubuntu-Bold.ttf
-ubuntucondensed/UbuntuCondensed-Regular.ttf
-ubuntumono/UbuntuMono-Regular.ttf
+chinese/SentyGoldSand.ttf
+chinese/优设标题黑.ttf
+chinese/沐瑶随心手写体.ttf
+chinese/AdobeHeitiStd-Regular.woff.ttf
+chinese/Classic-Song-ti-Font.ttf
+chinese/MaShanZheng-Regular.ttf
+chinese/zhongshan-xingshu.ttf
