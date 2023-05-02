@@ -98,11 +98,9 @@ class RenderFont(object):
         self.min_nchar = 2
         self.min_font_h = 16 #px : 0.6*12 ~ 7px <= actual minimum height
         self.max_font_h = 120 #px
-        # self.p_flat = 0.10
         self.p_flat = 0
 
         # curved baseline:
-        # self.p_curved = 1
         self.p_curved = 0
         self.baselinestate = BaselineState()
 
@@ -446,18 +444,10 @@ class FontState(object):
         # get character-frequencies in the English language:
         with open(char_freq_path,'rb') as f:
             self.char_freq = cp.load(f, encoding='latin1')
-            # u = pickle._Unpickler(f)
-            # u.encoding = 'latin1'
-            # p = u.load()
-            # self.char_freq = p
 
         # get the model to convert from pixel to font pt size:
         with open(font_model_path,'rb') as f:
             self.font_model = pickle.load(f, encoding='latin1')
-            # u = pickle._Unpickler(f)
-            # u.encoding = 'latin1'
-            # p = u.load()
-            # self.font_model = p
             
         # get the names of fonts to use:
         self.FONT_LIST = osp.join(data_dir, 'fonts/fontlist.txt')
