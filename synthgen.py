@@ -21,6 +21,7 @@ import text_utils as tu
 from colorize3_poisson import Colorize
 from common import *
 import traceback, itertools
+import math
 
 
 class TextRegions(object):
@@ -428,9 +429,15 @@ class RendererV3(object):
         # perpective:
         bbs_h = H.dot(bbs_h)
         bbs_h /= (bbs_h[2,:]+eps)
-
         bbs_h = np.reshape(bbs_h, (3,4,n), order='F')
+
+        # pts = self.order_points(bbs_h[:2,:,:])
+
+        print('bbs_h:\n',bbs_h.shape)
+        print('bbs_h[:2,:,:]:\n',bbs_h[:2,:,:].shape)
         return bbs_h[:2,:,:]
+        # return self.order_points(bbs_h)[:2,:,:]
+        
 
     def bb_filter(self,bb0,bb,text):
         """
@@ -510,8 +517,9 @@ class RendererV3(object):
         text_mask_orig = text_mask.copy()
         bb_orig = bb.copy()
         text_mask = self.warpHomography(text_mask,H,rgb.shape[:2][::-1])
+        print("text_mask:\n",text_mask.shape)
         bb = self.homographyBB(bb,Hinv)
-
+        
         if not self.bb_filter(bb_orig,bb,text):
             #warn("bad charBB statistics")
             return #None

@@ -98,7 +98,7 @@ class RenderFont(object):
         self.min_nchar = 2
         self.min_font_h = 16 #px : 0.6*12 ~ 7px <= actual minimum height
         self.max_font_h = 120 #px
-        self.p_flat = 0
+        self.p_flat = 1
 
         # curved baseline:
         self.p_curved = 0
